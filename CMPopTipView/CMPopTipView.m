@@ -46,6 +46,7 @@
 @synthesize maxWidth;
 @synthesize disableTapToDismiss;
 @synthesize dismissTapAnywhere;
+@synthesize preferredPointDirection;
 
 - (CGRect)bubbleFrame {
 	CGRect bubbleFrame;
@@ -303,18 +304,18 @@
     
 	CGFloat pointerY;	// Y coordinate of pointer target (within containerView)
 	
-	if (targetRelativeOrigin.y+targetView.bounds.size.height < containerRelativeOrigin.y) {
+	if (targetRelativeOrigin.y+targetView.bounds.size.height < containerRelativeOrigin.y && preferredPointDirection == PointDirectionUnkown) {
 		pointerY = 0.0;
 		pointDirection = PointDirectionUp;
 	}
-	else if (targetRelativeOrigin.y > containerRelativeOrigin.y+containerView.bounds.size.height) {
+	else if (targetRelativeOrigin.y > containerRelativeOrigin.y+containerView.bounds.size.height && preferredPointDirection == PointDirectionUnkown) {
 		pointerY = containerView.bounds.size.height;
 		pointDirection = PointDirectionDown;
 	}
 	else {
 		CGPoint targetOriginInContainer = [targetView convertPoint:CGPointMake(0.0, 0.0) toView:containerView];
 		CGFloat sizeBelow = containerView.bounds.size.height - targetOriginInContainer.y;
-		if (sizeBelow > targetOriginInContainer.y) {
+		if (sizeBelow > targetOriginInContainer.y && (preferredPointDirection == PointDirectionUp || preferredPointDirection == PointDirectionUnkown)) {
 			pointerY = targetOriginInContainer.y + targetView.bounds.size.height;
 			pointDirection = PointDirectionUp;
 		}
@@ -512,6 +513,7 @@
         self.borderColor = [UIColor blackColor];
         self.animation = CMPopTipAnimationSlide;
         self.dismissTapAnywhere = NO;
+        self.preferredPointDirection = PointDirectionUnkown;
     }
     return self;
 }
